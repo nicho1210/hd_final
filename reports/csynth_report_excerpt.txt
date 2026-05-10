@@ -1,0 +1,9 @@
+Top function: video_gray_live
+Pipeline: yes
+II: 1
+Iteration Latency: 2
+BRAM: 0
+DSP: 0
+FF: 180
+LUT: 1591
+URAM: 0

@@ -1,24 +1,43 @@
-PROJECT_DIR := selected_motion_regions/pyzq
+HLS        := vitis_hls
+TCL        := run_hls.tcl
+PROJECT    := video_gray_live_prj
+BOARD_DIR  := selected_motion_regions/pyzq
 
-.PHONY: all init hw pfm app clean status
+.PHONY: all csim synth hls board init hw pfm app status clean
 
-all: init hw pfm app
+# Default target for this submission:
+# run the root-level HLS verification flow
+all: csim synth
+
+# Run only HLS C simulation for the root-level files
+csim:
+	$(HLS) -f $(TCL) -tclargs csim
+
+# Run only HLS C synthesis for the root-level files
+synth:
+	$(HLS) -f $(TCL) -tclargs synth
+
+# Run both HLS C simulation and synthesis
+hls:
+	$(HLS) -f $(TCL) -tclargs all
+
+# Keep the old board-level flow available, but not as the default grading path
+board: init hw pfm app
 
 init:
 	git submodule update --init --recursive
 
 hw:
-	$(MAKE) -C $(PROJECT_DIR)/hw all
+	$(MAKE) -C $(BOARD_DIR)/hw all
 
 pfm:
-	$(MAKE) -C $(PROJECT_DIR)/baremetal pfm
+	$(MAKE) -C $(BOARD_DIR)/baremetal pfm
 
 app:
-	$(MAKE) -C $(PROJECT_DIR)/baremetal app
+	$(MAKE) -C $(BOARD_DIR)/baremetal app
 
 status:
 	git status
 
 clean:
-	$(MAKE) -C $(PROJECT_DIR)/hw clean || true
-	$(MAKE) -C $(PROJECT_DIR)/baremetal clean || true
+	if exist $(PROJECT) rmdir /s /q $(PROJECT)

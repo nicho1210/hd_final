@@ -87,6 +87,8 @@ static int drain_and_check_frame(
 
 int main()
 {
+    std::cout << "Running C simulation..." << std::endl;
+
     hls::stream<axis_pixel_t> in_stream("in_stream");
     hls::stream<axis_pixel_t> out_stream("out_stream");
     ap_uint<32> motion_info_out = 0;
@@ -113,6 +115,8 @@ int main()
                   << "count=" << count_f1
                   << " mask=0x" << std::hex << mask_f1 << std::dec << std::endl;
         ++errors;
+    } else {
+        std::cout << "Frame 1 motion info check passed" << std::endl;
     }
 
     // -----------------------------
@@ -131,6 +135,8 @@ int main()
         std::cout << "Frame 2 motion_count mismatch: got=" << count_f2
                   << " expect=1" << std::endl;
         ++errors;
+    } else {
+        std::cout << "Frame 2 motion_count = " << count_f2 << std::endl;
     }
 
     if (mask_f2 != (1u << 4)) {
@@ -138,6 +144,9 @@ int main()
                   << std::hex << mask_f2
                   << " expect=0x" << (1u << 4) << std::dec << std::endl;
         ++errors;
+    } else {
+        std::cout << "Frame 2 region_mask = 0x"
+                  << std::hex << mask_f2 << std::dec << std::endl;
     }
 
     if (errors == 0) {

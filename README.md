@@ -487,6 +487,30 @@ The most important files for this submission are:
 This repository intentionally keeps the submission small and easy to inspect.  
 Large generated build artifacts such as `.jou`, `.log`, `.cache`, and bulky temporary run directories are not required for understanding the final HLS design.
 
+### 15.5 Automated HLS flow
+A root-level `Makefile` and `run_hls.tcl` are included for direct reruns of the final HLS submission files.
+- `make csim` runs HLS C simulation for `video_gray_live`
+- `make synth` runs HLS C synthesis for `video_gray_live`
+- `make all` runs both
+
+## Board-level build flow used in the final system
+
+The final board deployment flow used during development was:
+
+1. Build and export the custom IP in Vitis HLS
+2. Import/update the exported IP in the Vivado hardware project
+3. Update the block design and regenerate hardware
+4. Export the hardware platform as an `.xsa` file into the `hw` directory
+5. Keep the block design TCL export in `hw/src/bd.tcl`
+6. Recreate or rebuild the Vivado project with:
+   `vivado -mode tcl -nojournal -source .\create_proj.tcl`
+7. Build the Vitis platform with:
+   `vitis -s .\build_pfm.py`
+8. Build the software application with:
+   `vitis -s .\build_sw_app.py`
+
+The root-level HLS files in this repository (`video_ip.cpp`, `video_ip.h`, `tb_video_ip.cpp`) are included so that the grader can directly inspect and rerun the final HLS design and testbench. These root-level files are a simplified grading-facing entry point, while the full board deployment flow above was used for the final hardware demonstration.
+
 ---
 
 ## 16. Current limitations
